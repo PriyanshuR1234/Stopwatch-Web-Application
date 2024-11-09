@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+
+  <!--css styling starts  -->
+    <style>
+        /* Main styl for the body */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #a274ff, #bf7ff7);
+            color: #fff;
+            margin: 0;
+        }
+
+        /* Container for stopwatch elements */
+        .container {
+            text-align: center;
+            position: relative;
+        }
+
+        /* Rotating clock styling */
+        .rotating-clock {
+            width: 100px;
+            height: 100px;
+            border: 5px solid #fff;
+            border-top: 5px solid #ff5733;
+            border-radius: 50%;
+            position: absolute;
+            top: -120px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: none;
+        }
+
+  
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Styl for the time display */
+        #time {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        /* Styling for butns */
+        .buttons button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        #startStopBtn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        #resetBtn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        #lapBtn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        /* Lap list styl */
+        #laps {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+    </style>
+     <!--css styling ends -->
+</head>
+<body>
+    <div class="container">
+        <div class="rotating-clock" id="rotatingClock"></div>
+        <h1>Stopwatch</h1>
+        <div id="time">00:00:00:000</div>
+        <div class="buttons">
+            <button id="startStopBtn">Start</button>
+            <button id="resetBtn">Reset</button>
+            <button id="lapBtn">Lap</button>
+        </div>
+        <ul id="laps"></ul>
+    </div>
+
+    <!-- js code starts from heree  -->
+    <script>
+        let startTime, elapsedTime, timerInterval;
+        let isRunning = false;
+        
+        const timeDisplay = document.getElementById('time');
+        const startStopBtn = document.getElementById('startStopBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const lapBtn = document.getElementById('lapBtn');
+        const lapsContainer = document.getElementById('laps');
+        const rotatingClock = document.getElementById('rotatingClock');
+
+        // Functn to start the timer
+        function startTimer() {
+            startTime = new Date().getTime();
+            timerInterval = setInterval(updateTime, 10);
+            rotatingClock.style.animation = "rotate 1s linear infinite";
+            isRunning = true;
+            startStopBtn.textContent = "Pause";
+        }
+
+        // Functn to pause the timer
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            rotatingClock.style.animation = "none";
+            isRunning = false;
+            startStopBtn.textContent = "Start";
+        }
+
+        // Functn to reset the timer and clear laps
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeDisplay.textContent = "00:00:00:000";
+            lapsContainer.innerHTML = '';
+            rotatingClock.style.animation = "none";
+            isRunning = false;
+            startStopBtn.textContent = "Start";
+        }
+
+        // Functn to record lap times
+        function recordLap() {
+            if (isRunning) {
+                const lapItem = document.createElement('li');
+                lapItem.textContent = timeDisplay.textContent;
+                lapsContainer.appendChild(lapItem);
+            }
+        }
+
+        // Funcn to update the display time
+        function updateTime() {
+            elapsedTime = new Date().getTime() - startTime;
+
+            const hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+            const minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+            const milliseconds = Math.floor((elapsedTime % 1000) / 10);
+
+            timeDisplay.textContent = 
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(milliseconds).padStart(2, '0')}`;
+        }
+
+        // Event listeners for btns
+        startStopBtn.addEventListener('click', () => {
+            if (!isRunning) {
+                startTimer();
+            } else {
+                pauseTimer();
+            }
+        });
+
+        resetBtn.addEventListener('click', resetTimer);
+        lapBtn.addEventListener('click', recordLap);
+    </script>
+</body>
+</html>
